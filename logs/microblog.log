@@ -1,0 +1,43 @@
+2018-05-26 19:01:55,375 ERROR: Exception on /edit_profile [GET] [in /vagrant/blog/blogVenv/lib/python3.5/site-packages/flask/app.py:1761]
+Traceback (most recent call last):
+  File "/vagrant/blog/blogVenv/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/vagrant/blog/blogVenv/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/vagrant/blog/blogVenv/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/vagrant/blog/blogVenv/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/vagrant/blog/blogVenv/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/vagrant/blog/blogVenv/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/vagrant/blog/blogVenv/lib/python3.5/site-packages/flask_login/utils.py", line 261, in decorated_view
+    return func(*args, **kwargs)
+  File "/vagrant/blog/app/routes.py", line 81, in edit_profile
+    form = EditProfileForm()
+  File "/vagrant/blog/blogVenv/lib/python3.5/site-packages/wtforms/form.py", line 212, in __call__
+    return type.__call__(cls, *args, **kwargs)
+TypeError: __init__() missing 1 required positional argument: 'original_username'
+2018-05-26 19:01:55,410 ERROR: Exception on /edit_profile [GET] [in /vagrant/blog/blogVenv/lib/python3.5/site-packages/flask/app.py:1761]
+Traceback (most recent call last):
+  File "/vagrant/blog/blogVenv/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/vagrant/blog/blogVenv/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/vagrant/blog/blogVenv/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/vagrant/blog/blogVenv/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/vagrant/blog/blogVenv/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/vagrant/blog/blogVenv/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/vagrant/blog/blogVenv/lib/python3.5/site-packages/flask_login/utils.py", line 261, in decorated_view
+    return func(*args, **kwargs)
+  File "/vagrant/blog/app/routes.py", line 81, in edit_profile
+    form = EditProfileForm()
+  File "/vagrant/blog/blogVenv/lib/python3.5/site-packages/wtforms/form.py", line 212, in __call__
+    return type.__call__(cls, *args, **kwargs)
+TypeError: __init__() missing 1 required positional argument: 'original_username'
+2018-05-26 19:06:28,126 INFO: Microblog startup [in /vagrant/blog/app/__init__.py:46]
