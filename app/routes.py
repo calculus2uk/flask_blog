@@ -1,3 +1,6 @@
+import os
+from base64 import b64encode
+from PIL import Image
 from flask import render_template, flash, redirect, url_for, request
 from app import app, db
 from datetime import datetime
@@ -68,11 +71,26 @@ def login():
 @login_required
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
+    image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
     posts = [
         {'author': user, 'body': 'Test post #1'},
         {'author': user, 'body': 'Test post #2'}
     ]
-    return render_template('user.html', user=user, posts=posts)
+    return render_template('user.html', user=user, posts=posts, image_file=image_file)
+
+
+def save_picture(form_picture):
+    token = os.urandom(8) # generate a random name for file
+    random_hex = b64encode(token).decode('utf-8') # decode the token to a string
+    _, f_ext = os.path.splitext(form_picture.filename)
+    picture_fn = random_hex + f_ext
+    picture_path = os.path.join(app.root_path, 'static/profile_pics', picture_fn)
+    #Using pillow to resize image file
+    output_size = (125, 125)
+    i = Image.open(form_picture)
+    i.thumbnail(output_size)
+    i.save(picture_path)
+    return  picture_fn
 
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
@@ -80,6 +98,9 @@ def user(username):
 def edit_profile():
     form = EditProfileForm(current_user.username)
     if form.validate_on_submit():
+        if form.picture.data:
+            picture_file = save_picture(form.picture.data)
+            current_user.image_file = picture_file
         current_user.username = form.username.data
         current_user.about_me = form.about_me.data
         db.session.commit()

@@ -10,6 +10,9 @@
                 {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
                 {% if user.last_seen %}<p>Last seen on: {{ user.last_seen }}</p>{% endif %}
             </td>
+            <td>
+               <img src="{{ image_file }}"></td>
+            </td>
         </tr>
     </table>
 
