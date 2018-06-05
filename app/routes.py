@@ -28,14 +28,17 @@ def index():
         db.session.commit()
         flash('Your post is now live!')
         return redirect(url_for('index'))
-    posts = current_user.followed_posts().all()
+    page = request.args.get('page', 1, type=int)
+    posts = current_user.followed_posts().paginate(
+        page, app.config['POSTS_PER_PAGE'] , False)
     return render_template("index.html", title='Home Page', form=form,
                            posts=posts)
 
 @app.route('/explore')
 @login_required
 def explore():
-    posts = Post.query.order_by(Post.timestamp.desc()).all()
+    page = request.args.get('page', 1, type=int)
+    posts = Post.query.order_by(Post.timestamp.desc()).paginate(page, app.config['POSTS_PER_PAGE'] , False)
     return render_template('index.html', title='Explore', posts=posts)
 
 
@@ -76,11 +79,9 @@ def login():
 @login_required
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
-    image_file = url_for('static', filename='profile_pics/' + current_user.image_file) or 'ama'
-    posts = [
-        {'author': user, 'body': 'Test post #1'},
-        {'author': user, 'body': 'Test post #2'}
-    ]
+    image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
+    page = request.args.get('page', 1, type=int)
+    posts = current_user.posts.paginate(page, app.config['POSTS_PER_PAGE'], False)
     return render_template('user.html', user=user, posts=posts, image_file=image_file)
 
 
