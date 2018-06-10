@@ -8,3 +8,5 @@
 2018-06-05 09:17:45,292 INFO: Microblog startup [in /vagrant/blog/app/__init__.py:46]
 2018-06-05 09:18:26,099 INFO: Microblog startup [in /vagrant/blog/app/__init__.py:46]
 2018-06-05 11:25:15,081 INFO: Microblog startup [in /vagrant/blog/app/__init__.py:46]
+2018-06-05 20:39:23,242 INFO: Microblog startup [in /vagrant/blog/app/__init__.py:49]
+2018-06-10 11:15:38,273 INFO: Microblog startup [in /vagrant/blog/app/__init__.py:49]
