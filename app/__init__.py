@@ -7,6 +7,7 @@ import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 import os
 from flask_bootstrap import Bootstrap
+from flask_moment import Moment
 
 from flask_mail import Mail
 
@@ -19,6 +20,7 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login = LoginManager(app)
 bootstrap = Bootstrap(app)
+moment = Moment(app)
 login.login_view = 'login'
 
 #email ser configurations
