@@ -3,9 +3,9 @@ from flask_login import current_user, login_user, logout_user, login_required
 from flask import render_template, flash, redirect, url_for, request
 from app.main.forms import ResetPasswordRequestForm, ResetPasswordForm
 from datetime import datetime
-from app.models import db
+from app.models import db, User
 from app.main import main
-
+from app.email.email import send_email
 
 @main.before_request
 def before_request():
@@ -38,6 +38,18 @@ def save_picture(form_picture):
     return  picture_fn
 
 
+def send_password_reset_email(user):
+    token = user.get_reset_password_token()
+    send_email('[Microblog] Reset Your Password',
+               sender=current_app.config['ADMINS'][0],
+               recipients=[user.email],
+               text_body=render_template('email/reset_password.txt',
+                                         user=user, token=token),
+               html_body=render_template('email/reset_password.html',
+                                         user=user, token=token))
+
+
+
 @main.route('/reset_password_request', methods=['GET', 'POST'])
 def reset_password_request():
     if current_user.is_authenticated:
@@ -48,7 +60,7 @@ def reset_password_request():
         if user:
             send_password_reset_email(user)
         flash(
-            _('Check your email for the instructions to reset your password'))
+            ('Check your email for the instructions to reset your password'))
         return redirect(url_for('users.login'))
     return render_template('email/reset_password_request.html',
                            title='Reset Password', form=form)

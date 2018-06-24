@@ -1,10 +1,15 @@
+from flask import current_app, url_for, redirect
 from datetime import datetime
 from hashlib import md5
-from app import db, login
-from flask_login import UserMixin
+from app import db, login, admin
+from flask_security import Security, SQLAlchemyUserDatastore, \
+        RoleMixin, UserMixin, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from time import time
 import jwt
+from flask_admin import helpers as admin_helpers
+from flask_admin.contrib.sqla import ModelView
+
 
 # This is an auxiliary table that has no data other than the 
 # foreign keys, Its created without an associated model class.
@@ -13,27 +18,37 @@ followers = db.Table('followers',
     db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))
     )
 
+# Define models
+roles_users = db.Table(
+    'roles_users',
+    db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
+    db.Column('role_id', db.Integer(), db.ForeignKey('role.id'))
+    )
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
-    password_hash = db.Column(db.String(128))
+    password = db.Column(db.String(128))
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     about_me = db.Column(db.String(140))
     last_seen = db.Column(db.DateTime,default=datetime.utcnow)
     image_file = db.Column(db.String(20), default='default.jpg')
+    active = db.Column(db.Boolean())
+    confirmed_at = db.Column(db.DateTime())
+    roles = db.relationship('Role', secondary=roles_users,
+                            backref=db.backref('users', lazy='dynamic'))
     followed = db.relationship(
         'User', secondary=followers,
         primaryjoin=(followers.c.follower_id == id),
         secondaryjoin=(followers.c.followed_id == id),
         backref=db.backref('followers', lazy='dynamic'), lazy='dynamic')
 
-    def set_password(self, password):
-    	self.password_hash = generate_password_hash(password)
+    def set_password(self, raw_password):
+    	self.password = generate_password_hash(raw_password)
 
-    def check_password(self, password):
-    	return check_password_hash(self.password_hash, password)
+    def check_password(self, raw_password):
+    	return check_password_hash(self.password, raw_password)
 
     def avatar(self, size):
         digest = md5(self.email.lower().encode('utf-8')).hexdigest()
@@ -69,7 +84,7 @@ class User(UserMixin, db.Model):
     def get_reset_password_token(self, expires_in=600):
         return jwt.encode(
             {'reset_password': self.id, 'exp': time() + expires_in},
-            app.config['SECRET_KEY'], algorithm='HS256').decode('utf-8')
+            current_app.config['SECRET_KEY'], algorithm='HS256').decode('utf-8')
 
     @staticmethod
     def verify_reset_password_token(token):
@@ -93,6 +108,42 @@ class Post(db.Model):
     def __repr__(self):
         return '<Post {}>'.format(self.body)
 
+class Role(db.Model, RoleMixin):
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(80), unique=True)
+    description = db.Column(db.String(255))
+
+    def __str__(self):
+        return self.name
+
+# Create customized model view class
+class MyModelView(ModelView):
+
+    def is_accessible(self):
+        if not current_user.is_active or not current_user.is_authenticated:
+            return False
+
+        if current_user.has_role(current_app.config['ADMIN_ROLE']):
+            return True
+
+        return False
+
+    def _handle_view(self, name, **kwargs):
+        """
+        Override builtin _handle_view in order to redirect users when a view is not accessible.
+        """
+        if not self.is_accessible():
+            if current_user.is_authenticated:
+                # permission denied
+                abort(403)
+            else:
+                # login
+                return redirect(url_for('security.login', next=request.url))
+
+# for adding modal views to the admin
+admin.add_view(MyModelView(User, db.session))
+admin.add_view(MyModelView(Post, db.session))
+admin.add_view(MyModelView(Role, db.session))
 
 @login.user_loader
 def load_user(id):

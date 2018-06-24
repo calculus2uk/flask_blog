@@ -1,49 +1,51 @@
 from flask import current_app
 from flask import render_template, flash, redirect, url_for, request
-from app.users.forms import LoginForm, RegistrationForm, EditProfileForm
-from flask_login import current_user, login_user, logout_user, login_required
+from app.secu.forms import ExtendedRegisterForm, ExtendedLoginForm
+from flask_security import current_user, logout_user, login_required, login_user
 from werkzeug.urls import url_parse
 from app.models import User, db
 from app.users import users
 
 
-@users.route('/register', methods=['GET', 'POST'])
-def register():
-    if current_user.is_authenticated:
-        return redirect(url_for('main.index'))
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
-        user.set_password(form.password.data)
-        db.session.add(user)
-        db.session.commit()
-        flash('Congratulations, you are now a registered user!')
-        return redirect(url_for('users.login'))
-    return render_template('register.html', title='Register', form=form)
+## This routes are handled by flask_security and I dont need to define them again
+# @users.route('/register', methods=['GET', 'POST'])
+# def register():
+#     if current_user.is_authenticated:
+#         return redirect(url_for('main.index'))
+#     register_user_form = ExtendedRegisterForm()
+#     if register_user_form.validate_on_submit():
+#         print('hi thee')
+#         user = User(username=register_user_form.username.data, email=register_user_form.email.data)
+#         user.set_password(register_user_form.password.data)
+#         db.session.add(user)
+#         db.session.commit()
+#         flash('Congratulations, you are now a registered user!')
+#         return redirect(url_for('users.login'))
+#     return render_template('register.html', title='Register', register_user_form=register_user_form)
 
 
-@users.route('/login', methods=['GET', 'POST'])
-def login():
-	if current_user.is_authenticated:
-		return redirect(url_for('main.index'))
-	form = LoginForm()
-	if form.validate_on_submit():
-		user = User.query.filter_by(username=form.username.data).first()
-		if user is None or not user.check_password(form.password.data):
-			flash('Invalid username or password')
-			return redirect(url_for('users.login'))
-		login_user(user, remember=form.remember_me.data)
-		next_page = request.args.get('next')
-		if not next_page or url_parse(next_page).netloc != '':
-			next_page = url_for('main.index')
-		return redirect(next_page)
-	return render_template('login.html', title='Sign In', form=form)
+# @users.route('/login', methods=['GET', 'POST'])
+# def login():
+# 	if current_user.is_authenticated:
+# 		return redirect(url_for('main.index'))
+# 	form = ExtendedLoginForm()
+# 	if form.validate_on_submit():
+# 		user = User.query.filter_by(username=form.username.data).first()
+# 		if user is None or not user.check_password(form.password.data):
+# 			flash('Invalid username or password')
+# 			return redirect(url_for('users.login'))
+# 		login_user(user, remember=form.remember.data)
+# 		next_page = request.args.get('next')
+# 		if not next_page or url_parse(next_page).netloc != '':
+# 			next_page = url_for('main.index')
+# 		return redirect(next_page)
+# 	return render_template('security/login_user.html', title='Sign In', login_user_form=form)
 
 
 @users.route('/logout')
 def logout():
-	logout_user()
-	return redirect(url_for('main.index'))
+    logout_user()
+    return redirect(url_for('main.index'))
 
 	
 @users.route('/user/<username>')
@@ -54,7 +56,6 @@ def user(username):
     page = request.args.get('page', 1, type=int)
     posts = current_user.posts.paginate(page, current_app.config['POSTS_PER_PAGE'], False)
     return render_template('users/user.html', user=user, posts=posts, image_file=image_file)
-
 
 
 @users.route('/edit_profile', methods=['GET', 'POST'])
