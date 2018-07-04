@@ -2,7 +2,7 @@ from flask import Blueprint, current_app
 from flask_login import current_user, login_user, logout_user, login_required
 from flask import render_template, flash, redirect, url_for, request
 from app.models import Post, db
-from app.posts import posts # blusprints
+from app.posts import posts # blueprints
 from app.posts.forms import PostForm
 
 

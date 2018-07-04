@@ -1,0 +1,23 @@
+    <!-- This is a small template that was included from the user profile 
+    page template, and was separate so that it can also be used from other
+     templates. -->
+
+    <table class="table table-hover">
+        
+        <tr>
+            <td width="70px">
+                <a href="{{ url_for('users.user', username=post.author.username) }}">
+                    <img src="{{ post.author.avatar(70) }}" />
+                </a>
+            </td>
+            <td>
+                <a href="{{ url_for('users.user', username=post.author.username) }}">
+                    {{ post.author.username }}
+                </a>
+                said {{ moment(post.timestamp).fromNow() }}:
+                <br>
+                {{ post.body }}
+            </td>
+        </tr>
+    
+    </table>

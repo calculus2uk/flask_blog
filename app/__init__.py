@@ -55,9 +55,9 @@ def create_app(config_class=Config):
         h=admin_helpers,
         get_url=url_for)
 
-    with app.app_context():
-        db.drop_all()
-        db.create_all()
+    #with app.app_context():
+        #db.drop_all()
+        #db.create_all()
 
     # this route is fired when a user registers, a role is assingned to 
     # the user as admin or normal_user
