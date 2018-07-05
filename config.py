@@ -45,3 +45,8 @@ class Config(object):
 
 
     USER_EMAIL_SENDER_EMAIL = "noreply@example.com"
+
+    # FLASK WHOOSH
+    WHOOSHEE_DIR = os.path.join(basedir, 'search.db')
+    MAX_SEARCH_RESULTS = 50
+    WHOOSHEE_ENABLE_INDEXING = False

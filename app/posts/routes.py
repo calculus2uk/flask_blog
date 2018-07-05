@@ -1,9 +1,15 @@
-from flask import Blueprint, current_app
+from flask import Blueprint, current_app, g
 from flask_login import current_user, login_user, logout_user, login_required
 from flask import render_template, flash, redirect, url_for, request
 from app.models import Post, db
 from app.posts import posts # blueprints
 from app.posts.forms import PostForm
+from app.main.forms import SearchForm
+
+@posts.before_request
+def before_request():
+    if current_user.is_authenticated:
+        g.search_form = SearchForm()
 
 
 @posts.route('/explore')
@@ -19,7 +25,7 @@ def explore():
 def new_post():
  	form = PostForm()
  	if form.validate_on_submit():
- 		post = Post(body=form.post.data, author=current_user)
+ 		post = Post(title=form.title.data, body=form.post.data, author=current_user)
  		db.session.add(post)
  		db.session.commit()
  		flash('Your post is now live!')

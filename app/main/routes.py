@@ -1,18 +1,20 @@
-from flask import current_app, jsonify
+from flask import current_app, jsonify, g
 from flask_login import current_user, login_user, logout_user, login_required
 from flask import render_template, flash, redirect, url_for, request
 from app.main.forms import ResetPasswordRequestForm, ResetPasswordForm, \
-    MessageForm
+    MessageForm, SearchForm
 from datetime import datetime
-from app.models import db, User, Message, Notification
+from app.models import db, User, Message, Notification, Post
 from app.main import main
 from app.email.email import send_email
+
 
 @main.before_request
 def before_request():
     if current_user.is_authenticated:
         current_user.last_seen = datetime.utcnow()
         db.session.commit()
+        g.search_form = SearchForm()
 
 
 @main.route('/', methods=['GET', 'POST'])
@@ -129,3 +131,21 @@ def notifications():
         'data': n.get_data(),
         'timestamp': n.timestamp
     } for n in notifications])
+
+
+
+@main.route('/search', methods=['POST'])
+@login_required
+def search():
+    if not g.search_form.validate_on_submit():
+        return redirect(url_for('main.index'))
+    return redirect(url_for('main.search_results', query=g.search_form.search.data))
+
+
+@main.route('/search_results/<query>')
+@login_required
+def search_results(query):
+    results = Post.query.whoosh_search(query).all()
+    return render_template('search_results.html',
+                           query=query,
+                           results=results)

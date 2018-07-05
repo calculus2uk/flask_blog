@@ -23,12 +23,14 @@ bootstrap = Bootstrap()
 moment = Moment()
 login.login_view = 'users.login'
 
+
 admin = Admin()
 security = Security()
 
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
+
 
     db.init_app(app)
     migrate.init_app(app, db)
@@ -46,7 +48,6 @@ def create_app(config_class=Config):
     ##registration and login FORM both modified to suit my implementation
     security_ctx = security.init_app(app, datastore, register_form=ExtendedRegisterForm, login_form=ExtendedLoginForm)
 
-
     @security_ctx.context_processor
     def security_context_processor():
         return dict(
@@ -55,9 +56,9 @@ def create_app(config_class=Config):
         h=admin_helpers,
         get_url=url_for)
 
-    #with app.app_context():
-        #db.drop_all()
-        #db.create_all()
+    # with app.app_context():
+    #     db.drop_all()
+    #     db.create_all()
 
     # this route is fired when a user registers, a role is assingned to 
     # the user as admin or normal_user

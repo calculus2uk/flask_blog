@@ -16,7 +16,7 @@
 	    </form>
     {% endif %}
     {% for post in posts.items %}
-    	{% include 'users/_post.html' %}
+    	{% include 'post/_post.html' %}
     {% endfor %}
     <!---->
     {% for page_num in posts.iter_pages(left_edge=1,right_edge=1, left_current=1, right_current=2) %}

@@ -10,13 +10,16 @@
                     <img src="{{ post.author.avatar(70) }}" />
                 </a>
             </td>
-            <td>
+            <td width="900px">
                 <a href="{{ url_for('users.user', username=post.author.username) }}">
-                    {{ post.author.username }}
+                    {{ post.author.username }} <br>
                 </a>
-                said {{ moment(post.timestamp).fromNow() }}:
-                <br>
+                {{ post.title }} <br>
                 {{ post.body }}
+            </td>
+            <td>
+                 {{ moment(post.timestamp).fromNow() }}:
+
             </td>
         </tr>
     

@@ -7,6 +7,8 @@
     <form action="" method="post">
         {{ form.hidden_tag() }}
         <p>
+            {{ form.title.label }}<br>
+            {{ form.title(cols=100, rows=12) }}<br>
             {{ form.post.label }}<br>
             {{ form.post(cols=100, rows=8) }}<br>
             {% for error in form.post.errors %}

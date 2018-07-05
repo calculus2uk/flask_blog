@@ -146,6 +146,7 @@ class Message(db.Model):
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100))
     body = db.Column(db.String(140))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -189,6 +190,7 @@ class MyModelView(ModelView):
 admin.add_view(MyModelView(User, db.session))
 admin.add_view(MyModelView(Post, db.session))
 admin.add_view(MyModelView(Role, db.session))
+
 
 @login.user_loader
 def load_user(id):
